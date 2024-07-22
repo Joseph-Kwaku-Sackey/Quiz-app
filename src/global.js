@@ -1,23 +1,26 @@
 //Global Variables
 
-import { qaData } from "./data-question.js";
-
 //variable of inputState
 export const globalVar = {
 	inputState: null,
+	wrongAnswerId: JSON.parse(sessionStorage.getItem('incorrectAnswer')) || [],
+	wrongAnswerObj: [],
 	spanState: null,
 	answerMode: false,
 	answer: null,
 	score: {
-		total: 0,
+		total: JSON.parse(sessionStorage.getItem('score')) || 0,
 	},
 };
 
 //variable for nextBtn func and progressbar animation
+const quizState = JSON.parse(sessionStorage.getItem("quizLevelState")) || [0,0];
+
 export const nextObj = {
-	initialLevelLoadStart: 0,
-	initialLevelLoadEnd: 0,
-	questionCount: qaData.length,
+	initialLevelLoadStart: quizState[0],
+	initialLevelLoadEnd: quizState[0],
+	questionCount: 5,
+	questionCountProgress: quizState[1],
 	completedValue: 100,
 };
 
@@ -37,7 +40,6 @@ export const nextMoveBtn = document.createElement("button");
 export const label = document.querySelector(
 	".quiz-answer-container__quiz-answer-sub-container"
 );
-
 
 export const levelLoader = document.createElement("div");
 levelLoader.classList = "btn-container__level-loader";

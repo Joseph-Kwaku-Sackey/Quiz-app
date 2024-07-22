@@ -1,6 +1,7 @@
 // main/parent  module
 
 import { qaData } from "./data-question.js";
+import { qaDataGenK } from "./data-question-genK.js";
 import {
 	globalVar,
 	nextMoveBtn,
@@ -11,19 +12,67 @@ import {
 	quizCont,
 	inputContainer,
 	nextObj,
+	levelLoader,
 } from "./global.js";
-import { progressAnimation } from "./tryNext.js";
+import { nextTryClickHandler, progressAnimation } from "./tryNext.js";
 
 //global variable (This)
-export let flowState = 0;
+let viewedCurrentQuest = [];
+let viewedQuest = [];
+let isTryAgainQuest = [];
+export let isTryQuestObj = [];
+let wrongAnswer;
+
+//getting viewQuestions in sessionStorage
+export const viewQuestSessionStorage =
+	JSON.parse(sessionStorage.getItem("viewedQuestions")) || [];
+viewedQuest = viewQuestSessionStorage;
+const quizState = JSON.parse(sessionStorage.getItem("quizLevelState")) || [
+	0, 0,
+];
+export const isTryQuest =
+	JSON.parse(sessionStorage.getItem("isTryQuest")) || [];
+isTryAgainQuest = isTryQuest;
+
+// html dom  extraction
+const main = document.querySelector('main');
+window.addEventListener('load', ()=>{
+	setTimeout(()=>{
+		main.style.visibility = 'visible'
+	}, 100)
+})
+
+levelLoader.style.transform = `scaleX(${quizState[0]}%)`;
 
 //looping question array
-export const qaMap = qaData.map((qa) => {
-	return qa;
-});
+const cat = JSON.parse(sessionStorage.getItem("categoryType") || 0);
+const unviewed = [];
+export let categoryType =
+	cat === 1 ? qaDataGenK : cat === 2 ? qaData : qaData;
 
-//current question generation
-let currentQuestion = qaMap[flowState];
+const unviewedLoad = (catType) => {
+	catType.map((my) => {
+		if (!viewQuestSessionStorage.includes(my.id)) {
+			unviewed.push(my);
+		}
+	});
+};
+unviewedLoad(categoryType);
+categoryType.map((value) => {
+	isTryAgainQuest.map((val) => {
+		// console.log(val);
+		if (val === value.id) {
+			isTryQuestObj.push(value);
+		}
+	});
+});
+const randomQuestion = Math.floor(Math.random() * unviewed.length);
+const randomTryQuestion =
+	JSON.parse(sessionStorage.getItem("tryCurrentQuest")) || 0;
+export const currentQuestion =
+	isTryAgainQuest.length === 5
+		? isTryQuestObj[randomTryQuestion]
+		: unviewed[randomQuestion];
 
 //question display
 export const quest = document.querySelector(
@@ -44,7 +93,7 @@ export const globalFunc = (data) => {
 		input.name = "animals";
 		input.className = "input-container__input";
 		span.className = "input-container__input-custom";
-		span.id = opt
+		span.id = opt;
 		inputLabelContainer.className = "input-label-container";
 		inputLabel.innerText = opt;
 		inputLabel.htmlFor = index;
@@ -54,6 +103,9 @@ export const globalFunc = (data) => {
 		inputLabelContainer.appendChild(inputLabel);
 		inputContainer.appendChild(inputLabelContainer);
 		label.appendChild(inputContainer);
+
+		viewedCurrentQuest.push(data.id);
+		wrongAnswer = data.id;
 
 		//clickEvent for radio and label
 		span.addEventListener("click", () => {
@@ -73,12 +125,39 @@ export const globalFunc = (data) => {
 			}
 		});
 	});
+
+	if (globalVar.wrongAnswerId.length) {
+		categoryType.map((val) => {
+			globalVar.wrongAnswerId.map((wrongVal) => {
+				if (wrongVal === val.id) {
+					if (!globalVar.wrongAnswerObj.includes(val)) {
+						globalVar.wrongAnswerObj.push(val);
+					}
+				}
+			});
+		});
+	}
 };
 globalFunc(currentQuestion);
 
+// backBtn eventListener
+const backBtn = document.querySelector(".back-arrow-container__btn ");
+backBtn.addEventListener("click", ()=>{
+	window.location.href = '/index.html'
+	backBtn.style.display = "none"
+})
+
+// progress status digit
+export const progressStatusDigit = document.createElement("p");
+progressStatusDigit.className = "progress-status-digit";
+progressStatusDigit.innerText = `${quizState[1]} / 5`;
+answerContainer.appendChild(progressStatusDigit);
+
 //global variable from generated HTMLnode
 const inputClass = document.querySelectorAll(".input-container__input");
-export const spanEle = document.querySelectorAll(".input-container__input-custom");
+export const spanEle = document.querySelectorAll(
+	".input-container__input-custom"
+);
 
 //func for other module
 export const input = () => {
@@ -93,11 +172,14 @@ export const answerView = () => {
 	quest.style.display = "none";
 	submitBtn.classList = "hidden";
 };
-
+//viewScore Page display
+nextTryClickHandler();
 
 //clickEvent for submitBtn
 submitBtn.addEventListener("click", (e) => {
 	e.preventDefault();
+	console.log(viewedCurrentQuest);
+	unviewedLoad(categoryType);
 	if (!globalVar.inputState) {
 		submitBtn.classList.add("btn-container__btn-submit-no-selection-anim");
 		setTimeout(() => {
@@ -106,11 +188,35 @@ submitBtn.addEventListener("click", (e) => {
 		}, 200);
 	} else {
 		progressAnimation();
+		if (isTryAgainQuest.length < 5) {
+			isTryAgainQuest.push(viewedCurrentQuest[0]);
+			sessionStorage.setItem("isTryQuest", JSON.stringify(isTryAgainQuest));
+		}
+
+		if (nextObj.questionCountProgress !== nextObj.questionCount) {
+			nextObj.questionCountProgress += 1;
+		}
+		progressStatusDigit.innerText = `${nextObj.questionCountProgress} / 5`;
+
+		if (nextObj.initialLevelLoadEnd <= 100) {
+			sessionStorage.setItem(
+				"quizLevelState",
+				JSON.stringify([
+					nextObj.initialLevelLoadEnd,
+					nextObj.questionCountProgress,
+				])
+			);
+		}
+		//setting viewedQuestions
+		console.log(viewedCurrentQuest);
+		viewedQuest.push(viewedCurrentQuest[0]);
+		viewedCurrentQuest = [];
+		sessionStorage.setItem("viewedQuestions", JSON.stringify(viewedQuest));
+		// sessionStorage.removeItem("viewedQuestions")
 		const answerStatusHandler = (srcValue, altValue, classStyle) => {
 			answerStatus.setAttribute("src", srcValue);
 			answerStatus.className = classStyle;
 			answerStatus.setAttribute("alt", altValue);
-			answerStatus.style.width = "36px";
 			nextMoveBtn.textContent = "next";
 			nextMoveBtn.className = "btn-container__nextMoveBtn";
 			nextMoveBtn.type = "button";
@@ -118,6 +224,14 @@ submitBtn.addEventListener("click", (e) => {
 			answerContainer.appendChild(answerStatus);
 			answerContainer.appendChild(nextMoveBtn);
 			globalVar.answerMode = true;
+			answerStatus.animate(
+				[{ width: 0 }, { width: "55px" }, { width: "35px" }],
+				{
+					duration: 550,
+					fill: "forwards",
+					easing: "ease-in-out",
+				}
+			);
 		};
 
 		if (globalVar.inputState === globalVar.answer) {
@@ -126,15 +240,21 @@ submitBtn.addEventListener("click", (e) => {
 				"correct",
 				"btn-container__answerResultSym-correct"
 			);
+
 			const loadgap = nextObj.completedValue / nextObj.questionCount;
 			globalVar.score.total += loadgap;
+			sessionStorage.setItem("score", JSON.stringify(globalVar.score.total));
 		} else if (globalVar.inputState !== globalVar.answer) {
 			answerStatusHandler(
 				"/assets/img/WrongBtn.svg",
 				"wrong",
 				"btn-container__answerResultSym-wrong"
 			);
-			
+			globalVar.wrongAnswerId.push(wrongAnswer);
+			sessionStorage.setItem(
+				"incorrectAnswer",
+				JSON.stringify(globalVar.wrongAnswerId)
+			);
 		}
 	}
 });

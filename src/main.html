@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="stylesheet"
+			href="/src/style.css" />
+		<link
+			rel="preconnect"
+			href="https://fonts.googleapis.com" />
+		<link
+			rel="preconnect"
+			href="https://fonts.gstatic.com"
+			crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" />
+		<link
+			rel="icon"
+			href="/assets/img/buil-quiz-logo-b.svg" />
+		<title>Quiz</title>
+		<script
+			src="/src/main.js"
+			type="module"
+			defer></script>
+	</head>
+	<body>
+		<div class="background-object-animation-container">
+			<span class="background-object-animate1"></span>
+			<span class="background-object-animate2"></span>
+		</div>
+		<div class="webpage-container">
+			<header class="header">
+				<div class="logo-container">
+					<img
+						src="/assets/img/buil-quiz-logo-w.svg"
+						alt="logo"
+						class="logo-container__logo"
+						width="13" />
+					<h1 class="logo-container__logo-text">Buil Quiz</h1>
+				</div>
+			</header>
+			<div class="loader-container">
+				<span class="loader-container__loader"></span>
+			</div>
+			<main class="main">
+				<div class="back-arrow-container">
+					<button class="back-arrow-container__btn">
+						<img class="back-arrow-container__back-arrow" src="/assets/img/back-arrow.svg" alt="back" width="20">
+					</button>
+				</div>
+				<section class="quiz-container">
+					<div class="quiz-container__quiz-question-container">
+						<p class="quiz-question-container__quiz-question"></p>
+					</div>
+					<form
+						class="quiz-container__quiz-answer-container"
+						action="">
+						<section class="quiz-answer-container__quiz-answer-sub-container">
+							<div class="quiz-answer-sub-container__input-container"></div>
+						</section>
+						<div class="quiz-answer-container__btn-container">
+							<button
+								class="btn-container__btn-submit"
+								type="submit">
+								Submit
+							</button>
+						</div>
+					</form>
+				</section>
+			</main>
+			<footer>Copyright &copy; Builvec : All rights reserved.</footer>
+		</div>
+	</body>
+</html>
