@@ -144,7 +144,11 @@ globalFunc(currentQuestion);
 const backBtn = document.querySelector(".back-arrow-container__btn ");
 backBtn.addEventListener("click", ()=>{
 	window.location.href = '/index.html'
-	backBtn.style.display = "none"
+	sessionStorage.removeItem("viewedQuestions");
+	sessionStorage.removeItem("completed");
+	sessionStorage.removeItem("isTryQuest");
+	sessionStorage.removeItem("incorrectAnswer");
+	sessionStorage.removeItem("quizLevelState");
 })
 
 // progress status digit
