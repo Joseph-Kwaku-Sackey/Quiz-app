@@ -251,6 +251,18 @@ input[type="radio"]:checked + .input-container__input-custom::before {
 	border-radius: 3px;
 }
 
+.error-message-container{
+	display: none;
+	margin-block: .5em 1em;
+
+}
+.error-message{
+	color: rgb(255, 87, 87);
+	position: absolute;
+	font-size: var(--default-font);
+
+}
+
 .score-container {
 	display: flex;
 	flex-direction: column;

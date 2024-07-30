@@ -113,6 +113,7 @@ export const globalFunc = (data) => {
 				input.checked = true;
 				globalVar.inputState = input.value;
 				submitBtn.style.backgroundColor = "rgb(120, 110, 0";
+				errorMsg.style.display = "none";
 			}
 		});
 		inputLabel.addEventListener("click", () => {
@@ -120,6 +121,7 @@ export const globalFunc = (data) => {
 				input.checked = true;
 				globalVar.inputState = input.value;
 				submitBtn.style.backgroundColor = "rgb(120, 110, 0";
+				errorMsg.style.display = "none";
 			} else {
 				inputLabel.htmlFor = null;
 			}
@@ -180,12 +182,17 @@ export const answerView = () => {
 //viewScore Page display
 nextTryClickHandler();
 
+//creating errorMessage
+const errorMsg = document.querySelector('.error-message-container');
+
+
 //clickEvent for submitBtn
 submitBtn.addEventListener("click", (e) => {
 	e.preventDefault();
 	console.log(viewedCurrentQuest);
 	unviewedLoad(categoryType);
 	if (!globalVar.inputState) {
+		errorMsg.style.display = "block"
 		submitBtn.classList.add("btn-container__btn-submit-no-selection-anim");
 		setTimeout(() => {
 			submitBtn.classList.remove("btn-container__btn-submit-no-selection-anim");
