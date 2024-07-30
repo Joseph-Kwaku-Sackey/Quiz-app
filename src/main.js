@@ -149,6 +149,7 @@ backBtn.addEventListener("click", ()=>{
 	sessionStorage.removeItem("isTryQuest");
 	sessionStorage.removeItem("incorrectAnswer");
 	sessionStorage.removeItem("quizLevelState");
+	sessionStorage.removeItem("score");
 })
 
 // progress status digit
